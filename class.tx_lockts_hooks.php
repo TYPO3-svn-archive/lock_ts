@@ -70,7 +70,10 @@ document.observe("dom:loaded", function () {
 $$(".c-inputButton").each( function ( einElement ) {
     if($F(einElement) == \'Update\'){
         einElement.replace(\'<span class="locked">' . $GLOBALS['LANG']->getLL('sys_template.replacedSubmitText', 1) . '</span>\');
-}
+	}
+	if($F(einElement) == \'Save and close\'){
+        einElement.replace(\'<span class="locked"></span>\');
+	}
     });
 });
 ';
