@@ -11,7 +11,7 @@
 			<label index="sys_template.locktstemplate">lock TypoScript Template</label>
 		</languageKey>
 		<languageKey index="de" type="array">
-			<label index="sys_template.replacedSubmitText">Template ist gespert</label>
+			<label index="sys_template.replacedSubmitText">Template ist gesperrt</label>
 			<label index="sys_template.locktstemplate">TypoScript Template speeren</label>
 			<label index="sys_template.tx_lockts_lock">speeren</label>
 		</languageKey>
