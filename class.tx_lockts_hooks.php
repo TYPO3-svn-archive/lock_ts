@@ -62,17 +62,17 @@ class tx_lockts_hooks {
             $rec = t3lib_BEfunc::getRecord('sys_template', $parameters['tplRow']['uid'],'tx_lockts_lock');
             if($rec['tx_lockts_lock'] == 1) {
                 $pObj->pObj->doc->inDocStylesArray[] = '
-                     .locked{font-weight:bold;}
+                     .locked{font-weight:bold;height:20px;line-height:20px;}
             ';
 
                 $pObj->pObj->doc->JScodeArray[] = '
 document.observe("dom:loaded", function () {
 $$(".c-inputButton").each( function ( einElement ) {
     if($F(einElement) == \'Update\'){
-        einElement.replace(\'<span class="locked">' . $GLOBALS['LANG']->getLL('sys_template.replacedSubmitText', 1) . '</span>\');
+        einElement.replace(\'<div class="locked">' . $GLOBALS['LANG']->getLL('sys_template.replacedSubmitText', 1) . '</div>\');
 	}
 	if($F(einElement) == \'Save and close\'){
-        einElement.replace(\'<span class="locked"></span>\');
+        einElement.replace(\'<div class="locked"></div>\');
 	}
     });
 });
