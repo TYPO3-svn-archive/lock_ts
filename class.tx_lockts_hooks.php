@@ -25,6 +25,8 @@
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
  * Hint: use extdeveval to insert/update function index above.
+ *
+ * Thanks to Steffen Kamper for his inspiring Extensions TSBrowser and lock_element
  */
 
 $GLOBALS['LANG']->includeLLFile('EXT:lock_ts/locallang_db.xml');
