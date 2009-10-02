@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Lock TypoScript Templates',
-	'description' => 'A simple write protection for Typoscript Templates.',
+	'description' => 'A simple write protection for TypoScript Templates.',
 	'category' => 'be',
 	'author' => 'Sven Juergens',
 	'author_email' => 'post@t3area.de',
