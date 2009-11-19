@@ -33,9 +33,17 @@ $GLOBALS['LANG']->includeLLFile('EXT:lock_ts/locallang_db.xml');
 
 class tx_lockts_hooks {
 
+	function getMainFields_preProcess($table,$row,&$pObj){
+	
+		if($table == 'sys_template' && $row['tx_lockts_lock'] == 1){
+				$pObj->renderReadonly = 1;
+		}
+		
+	}
+
     function checklock($parameters, $pObj) {
 
-        if (!$parameters['e']['config']) {
+        if (!$parameters['e']['config'] && !$parameters['e']['constants']) {
             // we are in the Tempplate overview
 
             // check if there was send the command to lock/ unlock the template
