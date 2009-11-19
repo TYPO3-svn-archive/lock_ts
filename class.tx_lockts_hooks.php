@@ -33,17 +33,25 @@ $GLOBALS['LANG']->includeLLFile('EXT:lock_ts/locallang_db.xml');
 
 class tx_lockts_hooks {
 
-	function getMainFields_preProcess($table,$row,&$pObj){
+	function getSingleField_postProcess($table, $field, $row, &$out, $PA, $pObj){
 	
-		if($table == 'sys_template' && $row['tx_lockts_lock'] == 1){
-				$pObj->renderReadonly = 1;
+		if($table['sys_template'] && $field =='tx_lockts_lock' && $row['tx_lockts_lock'] == 1){
+			$out = $this->replaceButtonsJS(1);
 		}
-		
-	}
+	
+	}	
 
     function checklock($parameters, $pObj) {
 
-        if (!$parameters['e']['config'] && !$parameters['e']['constants']) {
+        if ($parameters['e']['config'] || $parameters['e']['constants']) {
+		
+            $rec = t3lib_BEfunc::getRecord('sys_template', $parameters['tplRow']['uid'],'tx_lockts_lock');
+            if($rec['tx_lockts_lock'] == 1) {
+                 $pObj->pObj->doc->JScodeArray[] = $this->replaceButtonsJS();
+            }
+			
+		 }else {
+		
             // we are in the Tempplate overview
 
             // check if there was send the command to lock/ unlock the template
@@ -57,40 +65,55 @@ class tx_lockts_hooks {
                     array('tx_lockts_lock' => ($this->updateLock == 1 ? 1 : 0))
                 );
             }
+			
             // get templaterecord and check if we must set the "LOCK TS" field "checked"
             $rec = t3lib_BEfunc::getRecord('sys_template', $parameters['tplRow']['uid'],'tx_lockts_lock');
             $additionalInput = '
-			<div id="lock-ts">
-                            <input type="checkbox" class="checkbox" id="lock_ts" onclick="window.location.href=window.location.href+\'&lock_ts=\'+(this.checked?1:2)" value="1" '
-                            . ($rec['tx_lockts_lock'] == 1 ? ' checked="checked"' : '') . '/>
-				<label for="lock_ts"> ' . $GLOBALS['LANG']->getLL('sys_template.locktstemplate', 1) . ' </label><br />
-			</div>	
+				<div id="lock-ts">
+						<input type="checkbox" class="checkbox" id="lock_ts" onclick="window.location.href=window.location.href+\'&lock_ts=\'+(this.checked?1:2)" value="1" '
+						 . ($rec['tx_lockts_lock'] == 1 ? ' checked="checked"' : '') . '/>
+					<label for="lock_ts"> ' . $GLOBALS['LANG']->getLL('sys_template.locktstemplate', 1) . ' </label><br />
+				</div>	
 			';
 
             $parameters['theOutput'] .= $additionalInput;
-        }else {
-            $rec = t3lib_BEfunc::getRecord('sys_template', $parameters['tplRow']['uid'],'tx_lockts_lock');
-            if($rec['tx_lockts_lock'] == 1) {
-                $pObj->pObj->doc->inDocStylesArray[] = '
-                     .locked{font-weight:bold;height:20px;line-height:20px;}
-            ';
-
-                $pObj->pObj->doc->JScodeArray[] = '
-document.observe("dom:loaded", function () {
-$$(".c-inputButton").each( function ( einElement ) {
-    if($F(einElement) == \'Update\'){
-        einElement.replace(\'<div class="locked">' . $GLOBALS['LANG']->getLL('sys_template.replacedSubmitText', 1) . '</div>\');
-	}
-	if($F(einElement) == \'Save and close\'){
-        einElement.replace(\'<div class="locked"></div>\');
-	}
-    });
-});
-';
-
-           }
+       
        }
     }
+	// Javasript for replacing the buttons
+	function replaceButtonsJS($wrap=0){
+			$out = '';
+			$replaceText = '';
+			$replaceText = '<div style=\"font-weight:bold;height:20px;line-height:20px;\">'; 
+			$replaceText .= $GLOBALS['LANG']->getLL('sys_template.replacedSubmitText');
+			$replaceText .= '</div>';
+			
+			$out .= '
+				document.observe(\'dom:loaded\', function () {
+				$$(".buttongroup").each( function ( element, Index ) {
+					if(Index == 1){
+						element.innerHTML = "' . $replaceText . '";
+					}
+					if(Index == 2){
+						element.innerHTML = "";
+					}
+				});
+			});
+			
+			';
+		
+		if($wrap == 1){
+				$out = '<script type="text/javascript">
+					/*<![CDATA[*/
+					' . $out . '
+					/*]]>*/
+					</script>
+				';
+		}
+		
+		return $out;
+	
+	}
 
 }
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/lock_ts/class.tx_lockts_hooks.php']) {
